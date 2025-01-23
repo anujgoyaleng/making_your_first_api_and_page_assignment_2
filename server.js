@@ -2,7 +2,7 @@
 const express = require('express');
 const app = express();
 
-const statusDescriptions = {
+const statusCodes = {
   200: "OK: The request has succeeded. The meaning of this status depends on the HTTP method used.",
   201: "Created: The request has been fulfilled and has resulted in one or more new resources being created.",
   204: "No Content: The server successfully processed the request and is not returning any content.",
@@ -20,15 +20,14 @@ const statusDescriptions = {
 
 // Define the GET endpoint
 app.get('/status-info', (req, res) => {
-  const code = parseInt(req.query.code, 10); // Parse the "code" query parameter as an integer
+  const code = parseInt(req.query.code); // Retrieve the 'code' query parameter
 
-  if (!code || !statusDescriptions[code]) {
-      // If the code is not valid or not in the list, return a 400 response
-      return res.status(400).json({
-          status: 400,
-          message: "Bad Request: Invalid or unsupported status code provided."
-      });
+  if (statusCodes[code]) {
+    res.json({ code, description: statusCodes[code] });
+  } else {
+    res.status(400).json({ error: "Invalid or unsupported status code." });
   }
+
 
   // Respond with the status code and its description
   res.json({
